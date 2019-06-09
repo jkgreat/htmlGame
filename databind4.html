@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>动态数据绑定（四）</title>
+</head>
+<body>
+    <div id="app">
+        <p>姓：{{user.name.firstName}}, 名：{{user.name.lastName}}</p>
+        <p>年龄：{{user.age}}</p>
+        <p>地址：{{user.address.province}}{{user.address.city}}</p>
+    </div>
+<script>
+    var vuedata = {
+        el: '#app',
+        data: {
+            user: {
+                name: {
+                    firstName: '吴',
+                    lastName: '小明'
+                },
+                age: 25,
+                address: {
+                    province: '广东省',
+                    city: '深圳市'
+                }
+            }
+        }
+    };
+    function Vue(data, id) {
+        this.ele = document.querySelector(id);
+        this.content = this.ele.innerHTML;
+        this.data = data;
+    }
+    Vue.prototype = {
+        render: function() {
+            var content = this.content;
+            var re1 = /{{.+?}}/g;
+            var re2 = /{{(.+)}}/;
+            var arry = content.match(re1); // 匹配中元素节点中{{xxx.xxx}}格式的数据
+            for (var i = 0, len = arry.length; i < len; i++) {
+                var strArry = arry[i].match(re2)[1].split('.'); // 将{{xxx.xxx}} 分隔开
+                var tempdata = this.data;
+                for (var k = 0, klen = strArry.length; k < klen; k++) {
+                    tempdata = tempdata[strArry[k]]; // 逐项读取数据
+                }
+                content = content.replace(arry[i], tempdata); // 把{{xxx.xxx}}替换为真实数据
+            }
+            this.ele.innerHTML = content;
+        }
+    }      
+    var example = new Vue(vuedata.data, vuedata.el);
+    example.render();
+</script>   
+</body>
+</html>
